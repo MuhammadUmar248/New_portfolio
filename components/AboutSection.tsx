@@ -72,7 +72,7 @@ const AboutSection = () => {
                   <FaTools size={20} />
                 </div>
                 <h3 className="mt-5 text-xl font-semibold text-slate-950 dark:text-white">Product Partnership</h3>
-                <p className="mt-3 text-slate-600 dark:text-slate-400 leading-7">I don't just code—I partner with you. From MVP strategy to production scaling, I ensure your SaaS succeeds.</p>
+                <p className="mt-3 text-slate-600 dark:text-slate-400 leading-7">I don&apost just code—I partner with you. From MVP strategy to production scaling, I ensure your SaaS succeeds.</p>
               </div>
             </div>
           </div>
