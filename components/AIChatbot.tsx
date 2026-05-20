@@ -13,7 +13,7 @@ const AIChatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: "Hi there! I'm Umar's AI assistant. How can I help you today?",
+      text: "Hi there! I&aposm Umar&aposs AI assistant. How can I help you today?",
       isUser: false,
       timestamp: new Date(),
     },
