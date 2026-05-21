@@ -17,9 +17,9 @@ export default function RootLayout({
       */}
       <head />
       <body className="bg-white dark:bg-slate-950">
-        <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark"   disableTransitionOnChange >
+        <ThemeProvider enableSystem={true} attribute="class" defaultTheme="dark" disableTransitionOnChange>
           <Navbar />
-          {children}
+          <main className="pt-[4.5rem] md:pt-20">{children}</main>
           <Footer />
         </ThemeProvider>
       </body>

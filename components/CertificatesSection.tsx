@@ -1,26 +1,21 @@
 "use client"
 
 import Image from "next/image"
+import { portfolioCertificates } from "@/data/portfolio"
 
-const certificates = [
-  {
-    title: "Full Stack Web Development Certification",
-    description: "Validates my full-stack development skills across front-end, back-end, and databases, enabling me to build scalable and production-ready web applications.",
-    image: "/certificate-1.png",
-  },
-  {
-    title: "Introduction to SQL",
-    description: "Demonstrates basic SQL and database skills for efficient data handling and building data-driven applications.",
-    image: "/certificate-2.png",
-  },
-]
+const certificateImages = ["/certificate-1.png", "/certificate-2.png"]
+
+const certificates = portfolioCertificates.map((cert, index) => ({
+  ...cert,
+  image: certificateImages[index],
+}))
 
 const CertificatesSection = () => {
   return (
     <section id="certificates" className="py-20 bg-slate-100 dark:bg-slate-950 text-slate-950 dark:text-slate-100">
-      <div className="mx-auto max-w-7xl px-6">
+      <div className="site-container">
         <div className="text-center">
-          <p className="text-sm uppercase tracking-[0.3em] text-cyan-500 dark:text-cyan-300">Certifications</p>
+          <p className="text-sm uppercase tracking-[0.3em] text-cyan-600 dark:text-cyan-300">Certifications</p>
           <h2 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
             Professional Credentials
           </h2>

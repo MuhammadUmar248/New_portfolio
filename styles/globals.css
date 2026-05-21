@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .site-container {
+    @apply mx-auto w-full max-w-[1600px] px-4 sm:px-6 lg:px-10;
+  }
+
+  .nav-link-active {
+    @apply bg-cyan-500/10 text-cyan-700 dark:text-cyan-400;
+  }
+}

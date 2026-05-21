@@ -1,7 +1,10 @@
 "use client"
 
 import React, { useState, useRef, useEffect } from "react"
-import { FaRobot, FaTimes, FaPaperPlane } from "react-icons/fa"
+import { FiX, FiSend, FiMessageCircle } from "react-icons/fi"
+import { RiSparkling2Line } from "react-icons/ri"
+import { getChatbotResponse } from "@/lib/chatbotResponses"
+import { portfolioProfile } from "@/data/portfolio"
 
 interface Message {
   text: string
@@ -9,101 +12,51 @@ interface Message {
   timestamp: Date
 }
 
+const GREETING = `Hi! I'm ${portfolioProfile.fullName}'s portfolio assistant (answers based on this site only). Ask about projects, skills, certifications, or how to hire Umar.`
+
 const AIChatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
-      text: "Hi there! I&aposm Umar&aposs AI assistant. How can I help you today?",
+      text: GREETING,
       isUser: false,
       timestamp: new Date(),
     },
   ])
   const [inputValue, setInputValue] = useState("")
+  const [isTyping, setIsTyping] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  
-  // Portfolio owner information
-  const portfolioInfo = {
-    name: "Umar",
-    occupation: "Web Developer",
-    experience: "2+ years",
-    education: [
-      "BS in Computer Science from Superior University (2021 - Present)",
-      "Intermediate in Computer Science from Punjab College (2019 - 2021)"
-    ],
-    skills: {
-      frontend: ["React", "Next.js", "TypeScript", "Tailwind CSS", "HTML/CSS", "JavaScript"],
-      backend: ["Node.js", "Express", ],
-      database: ["MongoDB", "Firebase"],
-      tools: ["Git", "Vercel", ]
-    },
-    projects: [
-      "E-commerce platform with React and Node.js",
-      "Portfolio website with Next.js and Tailwind CSS",
-      "Task management app with MERN stack"
-    ],
-    interests: ["Web Development", "Mobile App Development"]
-  }
-  
-  // Auto-scroll to bottom of messages
+
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" })
     }
-  }, [messages])
+  }, [messages, isTyping])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!inputValue.trim()) return
+    if (!inputValue.trim() || isTyping) return
 
-    // Add user message
+    const userText = inputValue.trim()
     const userMessage: Message = {
-      text: inputValue,
+      text: userText,
       isUser: true,
       timestamp: new Date(),
     }
-    
+
     setMessages((prev) => [...prev, userMessage])
     setInputValue("")
+    setIsTyping(true)
 
-    // Process user query and generate appropriate response
     setTimeout(() => {
-      const userQuery = inputValue.toLowerCase()
-      let responseText = ""
-
-      // Check for specific keywords to provide relevant information
-      if (userQuery.includes("name") || userQuery.includes("who") || userQuery.includes("about")) {
-        responseText = `My name is ${portfolioInfo.name} and I&apos;m a ${portfolioInfo.occupation} with ${portfolioInfo.experience} of experience in building web applications and software solutions.`
-      } 
-      else if (userQuery.includes("education") || userQuery.includes("study") || userQuery.includes("degree") || userQuery.includes("university")) {
-        responseText = `Regarding education: ${portfolioInfo.education.join(". ")}. Currently focusing on modern web technologies.`
-      }
-      else if (userQuery.includes("skill") || userQuery.includes("technology") || userQuery.includes("tech stack")) {
-        responseText = `My technical skills include:\n\nFrontend: ${portfolioInfo.skills.frontend.join(", ")}\nBackend: ${portfolioInfo.skills.backend.join(", ")}\nDatabases: ${portfolioInfo.skills.database.join(", ")}\nTools: ${portfolioInfo.skills.tools.join(", ")}`
-      }
-      else if (userQuery.includes("project") || userQuery.includes("work") || userQuery.includes("portfolio")) {
-        responseText = `Some of my notable projects include: ${portfolioInfo.projects.join(", ")}. Each project demonstrates my ability to create scalable and user-friendly applications.`
-      }
-      else if (userQuery.includes("interest") || userQuery.includes("hobby") || userQuery.includes("passion")) {
-        responseText = `My professional interests include: ${portfolioInfo.interests.join(", ")}. I&apos;m passionate about creating impactful digital solutions.`
-      }
-      else if (userQuery.includes("contact") || userQuery.includes("hire") || userQuery.includes("email")) {
-        responseText = "You can contact me through the contact form on this website, or connect with me on LinkedIn or GitHub using the links in the footer section."
-      }
-      else if (userQuery.includes("hello") || userQuery.includes("hi") || userQuery.includes("hey")) {
-        responseText = `Hello! I&apos;m ${portfolioInfo.name}&apos;s AI assistant. How can I help you learn more about ${portfolioInfo.name} and his work?`
-      }
-      else {
-        responseText = `I&apos;m ${portfolioInfo.name}&apos;s AI assistant. I can tell you about his skills, education, projects, or interests. What would you like to know?`
-      }
-      
       const aiMessage: Message = {
-        text: responseText,
+        text: getChatbotResponse(userText),
         isUser: false,
         timestamp: new Date(),
       }
-      
       setMessages((prev) => [...prev, aiMessage])
-    }, 1000)
+      setIsTyping(false)
+    }, 800)
   }
 
   const toggleChat = () => {
@@ -111,106 +64,116 @@ const AIChatbot: React.FC = () => {
   }
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   }
 
   return (
-    <div className="fixed bottom-5 right-5 z-50">
-      {/* Chat button */}
-      <button
-        onClick={toggleChat}
-        className={`
-          ${isOpen ? 'hidden' : 'flex'}
-          items-center justify-center
-          w-14 h-14 rounded-full
-          bg-gradient-to-r from-teal-500 to-blue-500
-          text-white shadow-lg
-          hover:shadow-xl transform hover:scale-105 transition-all duration-300
-        `}
-        aria-label="Open chat"
-      >
-        <FaRobot size={24} />
-      </button>
+    <div className="fixed bottom-6 right-6 z-20 pointer-events-none">
+      {!isOpen && (
+        <button
+          type="button"
+          onClick={toggleChat}
+          className="pointer-events-auto group relative flex h-14 w-14 items-center justify-center rounded-full border border-cyan-400/30 bg-white text-cyan-600 shadow-2xl shadow-cyan-500/15 backdrop-blur-xl transition hover:-translate-y-1 hover:border-cyan-400/50 hover:shadow-cyan-500/25 dark:bg-slate-900/95 dark:text-cyan-400"
+          aria-label="Open AI assistant"
+        >
+          <span className="absolute inset-0 rounded-full bg-cyan-500/10 opacity-0 transition group-hover:opacity-100" />
+          <FiMessageCircle size={26} className="relative" />
+          <span className="absolute -right-0.5 -top-0.5 flex h-3 w-3">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-400 opacity-60" />
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-cyan-500" />
+          </span>
+        </button>
+      )}
 
-      {/* Chat window */}
       {isOpen && (
-        <div className="
-          w-80 sm:w-96 h-96
-          bg-white dark:bg-stone-800
-          rounded-lg shadow-2xl
-          flex flex-col
-          border border-gray-200 dark:border-stone-700
-          overflow-hidden
-        ">
-          {/* Chat header */}
-          <div className="
-            bg-gradient-to-r from-teal-500 to-blue-500
-            p-4 text-white
-            flex justify-between items-center
-          ">
-            <div className="flex items-center">
-              <FaRobot className="mr-2" />
-              <h3 className="font-bold">Umar&apos;s AI Assistant</h3>
+        <div className="pointer-events-auto flex h-[28rem] w-[22rem] flex-col overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white/95 shadow-2xl shadow-slate-300/50 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-900/95 dark:shadow-slate-950/50 sm:w-96">
+          <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 dark:border-slate-800">
+            <div className="flex items-center gap-3">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+                <RiSparkling2Line size={20} />
+              </span>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400">
+                  AI Assistant
+                </p>
+                <h3 className="text-sm font-bold text-slate-950 dark:text-white">
+                  {portfolioProfile.name}
+                </h3>
+              </div>
             </div>
             <button
               onClick={toggleChat}
-              className="text-white hover:text-gray-200 transition-colors"
+              className="rounded-xl p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800 dark:hover:bg-slate-800 dark:hover:text-slate-200"
               aria-label="Close chat"
             >
-              <FaTimes />
+              <FiX size={20} />
             </button>
           </div>
 
-          {/* Messages container */}
-          <div className="flex-1 p-4 overflow-y-auto">
+          <div className="flex-1 space-y-1 overflow-y-auto bg-slate-50/80 p-4 dark:bg-slate-950/50">
             {messages.map((message, index) => (
               <div
                 key={index}
-                className={`mb-4 flex ${message.isUser ? 'justify-end' : 'justify-start'}`}
+                className={`mb-3 flex ${message.isUser ? "justify-end" : "justify-start"}`}
               >
                 <div
-                  className={`
-                    max-w-[80%] p-3 rounded-lg
-                    ${message.isUser
-                      ? 'bg-teal-500 text-white rounded-tr-none'
-                      : 'bg-gray-100 dark:bg-stone-700 text-gray-800 dark:text-gray-200 rounded-tl-none'}
-                  `}
+                  className={`max-w-[85%] rounded-2xl px-4 py-3 ${
+                    message.isUser
+                      ? "rounded-tr-md bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20"
+                      : "rounded-tl-md border border-slate-200 bg-white text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
+                  }`}
                 >
-                  <p className="text-sm whitespace-pre-line">{message.text}</p>
-                  <p className={`text-xs mt-1 ${message.isUser ? 'text-teal-100' : 'text-gray-500 dark:text-gray-400'}`}>
+                  <p className="text-sm leading-relaxed whitespace-pre-line">
+                    {message.text}
+                  </p>
+                  <p
+                    className={`mt-1.5 text-[10px] uppercase tracking-wider ${
+                      message.isUser
+                        ? "text-slate-800/70"
+                        : "text-slate-400 dark:text-slate-500"
+                    }`}
+                  >
                     {formatTime(message.timestamp)}
                   </p>
                 </div>
               </div>
             ))}
+
+            {isTyping && (
+              <div className="mb-3 flex justify-start">
+                <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-md border border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-cyan-500 [animation-delay:-0.2s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-cyan-500 [animation-delay:-0.1s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-cyan-500" />
+                </div>
+              </div>
+            )}
+
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input form */}
-          <form onSubmit={handleSubmit} className="p-3 border-t border-gray-200 dark:border-stone-700 flex">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              placeholder="Ask about Umar..."
-              className="
-                flex-1 px-4 py-2 rounded-l-lg
-                bg-gray-100 dark:bg-stone-700
-                text-gray-800 dark:text-gray-200
-                focus:outline-none
-              "
-            />
-            <button
-              type="submit"
-              className="
-                bg-gradient-to-r from-teal-500 to-blue-500
-                text-white px-4 rounded-r-lg
-                hover:opacity-90 transition-opacity
-              "
-              aria-label="Send message"
-            >
-              <FaPaperPlane />
-            </button>
+          <form
+            onSubmit={handleSubmit}
+            className="border-t border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900"
+          >
+            <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 focus-within:border-cyan-500/50 focus-within:ring-2 focus-within:ring-cyan-500/20 dark:border-slate-800 dark:bg-slate-950/80">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder={`Ask about ${portfolioProfile.name}...`}
+                className="flex-1 bg-transparent px-1 py-2 text-sm text-slate-950 placeholder:text-slate-400 focus:outline-none dark:text-slate-100 dark:placeholder:text-slate-500"
+                disabled={isTyping}
+              />
+              <button
+                type="submit"
+                disabled={isTyping || !inputValue.trim()}
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-500 text-slate-950 transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-40"
+                aria-label="Send message"
+              >
+                <FiSend size={16} />
+              </button>
+            </div>
           </form>
         </div>
       )}

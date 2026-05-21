@@ -11,7 +11,7 @@ module.exports = {
   ],
   theme: {
     extend: {
-      screens: { sm: "480px", md: "768px", lg: "976px", xl: "1440pd" },
+      screens: { sm: "480px", md: "768px", lg: "976px", xl: "1280px", "2xl": "1536px" },
       animation: {
         fadeIn: "fadeIn 1.5s",
         bounce:
@@ -19,6 +19,7 @@ module.exports = {
         slideUp: "slideUp 0.5s",
         slideUpEaseInOut: "slideUp 0.5s ease-in-out",
         slideUpCubiBezier: "slideUp 1s cubic-bezier(0.165, 0.84, 0.44, 1)",
+        popupIn: "popupIn 0.25s ease-out",
       },
       animationDelay: {
         0: "0s",
@@ -38,6 +39,10 @@ module.exports = {
         bounce: {
           from: { transform: "translateY(10px)" },
           to: { transform: "translateY(0)" },
+        },
+        popupIn: {
+          from: { opacity: 0, transform: "scale(0.95) translateY(8px)" },
+          to: { opacity: 1, transform: "scale(1) translateY(0)" },
         },
       },
     },
